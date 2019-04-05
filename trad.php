@@ -1,7 +1,7 @@
 <?php
-
+$filetrad = fopen("trad.txt", "r+");
 $text = "";
-$file_crypt = fopen('PD_hex.txt', 'r');
+$file_crypt = fopen('PK_hex.txt', 'r');
 while(!feof($file_crypt)) {
     $line = fgets($file_crypt, 255);
     $text .= $line;
@@ -37,7 +37,7 @@ $convert = array(
 );
 
 for ($i = 0; $i <= (strlen($hex)-1); $i++) {
-        $bin .= $convert[$hex{$i}];
+    $bin .= $convert[$hex{$i}];
 }
 
 $file = fopen('keys.txt', 'r');
@@ -86,74 +86,19 @@ while(!feof($file)) {
 
     while($i != $taille)
     {
-        //echo pack('H*', base_convert($tableau_bin[$i], 2, 16)) . "\n";
+        echo pack('H*', base_convert($tableau_bin[$i], 2, 16)) . "\n";
         $tab_convert[$i] = pack('H*', base_convert($tableau_bin[$i], 2, 16));
+        fputs($filetrad, $tab_convert[$i]);
         $i++;
     }
     array_push($tab_bin,$decrypt_bin);
     $decrypt_bin = "";
 
-    $i = 0;
-    $taille2 = count($tab_convert);
-
-    while($i != $taille2)
-    {
-        $a = 0;
-        for($a = 0; $a < 7; $a++)
-        {
-            $search = substr($tab_convert[$i],$a,1);
-
-            if(in_array($search, $indesirable))
-            {
-                if ($a == "0")
-                {
-                    unset($alphabet1[$key_compte]);
-                }
-                else if ($a == "1")
-                {
-                    unset($alphabet2[$key_compte]);
-                }
-                else if ($a == "2")
-                {
-                    unset($alphabet3[$key_compte]);
-                }
-                else if ($a == "3")
-                {
-                    unset($alphabet4[$key_compte]);
-                }
-                else if ($a == "4")
-                {
-                    unset($alphabet5[$key_compte]);
-                }
-                else if ($a == "5")
-                {
-                    unset($alphabet6[$key_compte]);
-                }
-
-            }
-        }
-
-        $i++;
-    }
-    $key_compte++;
-
 }
 
-echo "ALPHA 1\n";
-var_dump($alphabet1);
-echo "ALPHA 2\n";
-var_dump($alphabet2);
-echo "ALPHA 3\n";
-var_dump($alphabet3);
-echo "ALPHA 4\n";
-var_dump($alphabet4);
-echo "ALPHA 5\n";
-var_dump($alphabet5);
-echo "ALPHA 6\n";
-var_dump($alphabet6);
 
 fclose($file);
-
+fclose($filetrad)
 //var_dump($tab_bin);
 
 ?>
