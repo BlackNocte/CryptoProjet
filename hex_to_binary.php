@@ -64,14 +64,32 @@ while(!feof($file)) {
         }
         $j++;
     }
-    echo pack('H*', base_convert(substr($decrypt_bin, 0, 400), 2, 16))."\n";
 
+    $tab = 0;
+
+    $tableau_bin = str_split($decrypt_bin, 48);
+
+    $i = 0;
+    $taille = count($tableau_bin);
+
+    echo "Key =".$key."\n\n";
+    while($i != $taille)
+    {
+        echo pack('H*', base_convert($tableau_bin[$i], 2, 16)) . "\n";
+        $i++;
+    }
+    echo "\n";
     array_push($tab_bin,$decrypt_bin);
     $decrypt_bin = "";
 }
 
+
+
 fclose($file);
 
-#var_dump($tab_bin);
+//var_dump($tab_bin);
+
+$indesirable = '&#\"~{([])}_\/;|`<>^¨%$¤+*°§£!';
+
 
 ?>
