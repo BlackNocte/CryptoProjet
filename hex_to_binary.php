@@ -1,11 +1,21 @@
 <?php
 
-$hex = "2f0d 1559 1a14 1701 120a 4a13 0c06 0e1c";
+$text = "";
+$file_crypt = fopen('PD_hex.txt', 'r');
+while(!feof($file_crypt)) {
+    $line = fgets($file_crypt, 255);
+    $text .= $line;
+}
+fclose($file_crypt);
+$text = str_replace("\n","",$text);
+$text = str_replace("\r","",$text);
+$text = str_replace("\t","",$text);
+$text = str_replace(" ","",$text);
+
+$hex = $text;
 $bin = "";
-$key = "fabqtl";
-$key_hex = implode(unpack("H*", $key));
-$key_bin = "";
 $decrypt_bin = "";
+$tab_bin = array();
 $j = 0;
 $convert = array(
     "0" => "0000",
@@ -27,27 +37,41 @@ $convert = array(
 );
 
 for ($i = 0; $i <= (strlen($hex)-1); $i++) {
-    if ($hex{$i} != " ") {
         $bin .= $convert[$hex{$i}];
-    }
 }
 
-for ($i = 0; $i <= (strlen($key_hex)-1); $i++) {
-    $key_bin .= $convert[$key_hex{$i}];
+$file = fopen('keys.txt', 'r');
+while(!feof($file)) {
+    $key = fgets($file, 255);
+    $key_hex = implode(unpack("H*", $key));
+    if (substr($key_hex, 12, 4) == "0d0a") {
+        $key_hex = substr($key_hex, 0, -4);
+    }
+    $key_bin = "";
+
+    for ($i = 0; $i <= (strlen($key_hex)-1); $i++) {
+        $key_bin .= $convert[$key_hex{$i}];
+    }
+
+    for ($i = 0; $i <= (strlen($bin)-1); $i++) {
+        if ($j == strlen($key_bin)) {
+            $j = 0;
+        }
+        if ($bin{$i} xor $key_bin{$j} == true) {
+            $decrypt_bin .= "1";
+        } else {
+            $decrypt_bin .= "0";
+        }
+        $j++;
+    }
+    echo pack('H*', base_convert(substr($decrypt_bin, 0, 400), 2, 16))."\n";
+
+    array_push($tab_bin,$decrypt_bin);
+    $decrypt_bin = "";
 }
 
-for ($i = 0; $i <= (strlen($bin)-1); $i++) {
-    if ($j == strlen($key_bin)) {
-        $j = 0;
-    }
-    if ($bin{$i} xor $key_bin{$j} == true) {
-        $decrypt_bin .= "1";
-    } else {
-        $decrypt_bin .= "0";
-    }
-    $j++;
-}
+fclose($file);
 
-echo $decrypt_bin;
+#var_dump($tab_bin);
 
 ?>
